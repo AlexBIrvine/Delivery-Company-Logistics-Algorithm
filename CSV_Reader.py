@@ -24,4 +24,4 @@ def load_distances(self, file_name):
             csv_reader = csv.reader(csv_file, delimiter=',')
 
             for row in csv_reader:
-                # do stuff
+                # do stuff 

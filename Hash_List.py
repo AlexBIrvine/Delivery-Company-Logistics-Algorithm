@@ -16,7 +16,7 @@ class HashList:
         for bucket in range(capacity):
             self.package_table.append([])
 
-    # Create package  --  works
+    # Create package  --  complete
     def insert_package(self, package):
         global global_count
         global_count = global_count + 1
@@ -25,13 +25,13 @@ class HashList:
         bucket_list = self.package_table[bucket]
         bucket_list.append(package)
 
-    # Retrieve package data  --  broken
+    # Retrieve package data  --  
     def search_package(self, id):
         bucket = id % len(self.package_table)
         bucket_list = self.package_table[bucket]
         return bucket_list[0]  # possible rewrite (for package in bucket, if id == id, return package.  End of loop, return none)
 
-    # Delete package  -- works
+    # Delete package  -- 
     def delete_package(self, id):
         bucket = id % len(self.package_table)
         bucket_list = self.package_table[bucket]
@@ -39,7 +39,7 @@ class HashList:
         if id in bucket_list:
             bucket_list.remove(id)
 
-    # Populate hashlist from CSV file  --  works
+    # Populate hashlist from CSV file  --  
     def load_from_csv(self, file_name):
 
         with open(file_name) as csv_file:
