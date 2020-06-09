@@ -1,16 +1,13 @@
 from Package import Package
 import csv
 
-
-global_count = 0
-
 class HashList: 
     '''
-    Hash list meant for packages.  
+    Hash list meant for packages.
     '''
 
     # Initialize Hash List  --  works
-    def __init__(self, capacity=40): 
+    def __init__(self, capacity=50): 
         self.package_table = []
 
         for bucket in range(capacity):
@@ -18,18 +15,21 @@ class HashList:
 
     # Create package  --  complete
     def insert_package(self, package):
-        global global_count
-        global_count = global_count + 1
-
         bucket = package.package_id % len(self.package_table)
         bucket_list = self.package_table[bucket]
         bucket_list.append(package)
 
-    # Retrieve package data  --  
+    # Retrieve package data  -- 
     def search_package(self, id):
         bucket = id % len(self.package_table)
         bucket_list = self.package_table[bucket]
-        return bucket_list[0]  # possible rewrite (for package in bucket, if id == id, return package.  End of loop, return none)
+        
+        for package in bucket_list:
+            if package.package_id == id:
+                return package
+                
+        return None
+
 
     # Delete package  -- 
     def delete_package(self, id):
@@ -47,13 +47,14 @@ class HashList:
             
             for row in reader:
                 package = Package(int(row[0]))
-                package.address = row[1]
-                package.city = row[2]
-                package.state = row[3]
-                package.zip_code = row[4]
-                package.deadline = row[5]
-                package.weight = row[6]
-                package.instructions = row[7]
+                package.address_id = row[1]
+                package.address = row[2]
+                package.city = row[3]
+                package.state = row[4]
+                package.zip_code = row[5]
+                package.deadline = row[6]
+                package.weight = row[7]
+                package.instructions = row[8]
                 self.insert_package(package)
 
     # Print hash last
@@ -69,5 +70,4 @@ class HashList:
 
 cart = HashList()
 cart.load_from_csv('CSV_Data\packages.csv')
-print(cart)
-# print(cart)
+print(cart.search_package(12))

@@ -7,6 +7,8 @@ class Package:
     '''
 
     package_id: int
+    address_id: int = None
+    site_name: str = None
     address: str = None
     deadline: str = None
     city: str = None
@@ -15,9 +17,11 @@ class Package:
     status: str = 'At Hub'
     instructions: str = None
 
+
     def __str__(self):
         return f'''
         ID = {self.package_id}
+        A_ID = {self.address_id}
         address = {self.address}
         deadline = {self.deadline}
         city = {self.city}

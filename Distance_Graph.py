@@ -1,33 +1,51 @@
 import csv
-import re
 
-def load_from_csv(file_name):
+class DistanceGraph:
+    '''
+    2D list of distance table
+    '''
 
-    # Read in CSV file
-    with open(file_name) as csv_file:
-        reader = csv.reader(csv_file, delimiter=',')
-        
-        # Declare local variables
-        site_list = []
-        row_count = 0
+    def __init__(self):
+        self.distance_table = []
 
-        # Loop through each row in file
-        for i, row in enumerate(reader):
+    def load_from_csv(self, file_name='CSV_Data\distances-filled.csv'):
 
-            # Read the first value of the row, which is the name of the property
-            # The data contains the name and address in one string value
-            # Using regex to remove the address.  
-            match = re.match(r'^\D*', row[0])
-            if match:
-                name = match.group().strip()
-                site_list.append(name)
+        # Read in CSV file
+        with open(file_name) as csv_file:
+            reader = csv.reader(csv_file, delimiter=',')
+            
+            # Declare local variables
+            column_count = 0
 
-            # Each row contains a list
-            # Loops through the list assinging distance to location
-            for i, cell in enumerate(row):
-                if (i > 1 and cell != '0.0'): 
-                    print(f"Distance from {name} to {site_list[i-2]}: {cell}") 
-                elif (cell == '0.0'): 
-                    break
+            # Loop through each row in file
+            for row in reader:
+                current_row = []
+                
+                for column in row: 
+                    if column_count > 1:
+                        current_row.append(column)
+                    column_count += 1
+                    
+                self.distance_table.append(current_row)
+                column_count = 0
 
-load_from_csv('CSV_Data\distances.csv')
+    def lookup_cell(self, column, row):
+        return self.distance_table[column][row]
+
+    def __repr__(self):
+        return_string = ""
+
+        for index, row in enumerate(self.distance_table):
+            return_string += f'{index} = {str(row)}\n'
+
+        return return_string
+
+
+distance = DistanceGraph()
+distance.load_from_csv()
+print(distance.lookup_cell(1,2))
+
+
+# TODO:
+# 1- Add remove method (maybe set cell to negative 1?)
+# 2- Add graph algorithm
