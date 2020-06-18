@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 @dataclass
 class Package:
@@ -12,11 +13,14 @@ class Package:
     address: str = None
     deadline: str = None
     city: str = None
-    zip_code: str = None
+    zip_code: str = None    
     weight: float = None
     status: str = 'At Hub'
     instructions: str = None
+    distances: List[float] = None
 
+    def distance_to(self, address_id):
+        return self.distances[address_id]
 
     def __str__(self):
         return f'''
@@ -29,4 +33,8 @@ class Package:
         weight = {self.weight}
         status = {self.status}
         instructions = {self.instructions}
+        distances = {self.distances}
         '''
+
+    def __eq__(self, other):
+        return self.package_id == other.package_id
