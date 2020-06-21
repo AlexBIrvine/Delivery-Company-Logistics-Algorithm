@@ -6,11 +6,11 @@ class DistanceTable:
 
     def __init__(self):
         '''Initializes the object and calls load_from_csv method'''
-        self.distance_table = []
+        self.table = []
         self.load_from_csv()
 
     def load_from_csv(self, file_name='CSV_Data\distances-filled.csv'):
-        '''Loads data from csv into distance_table'''
+        '''Loads data from csv into table'''
         
         # opens & reads from csv file 
         with open(file_name) as csv_file:
@@ -29,8 +29,10 @@ class DistanceTable:
                         current_row.append(column)
                 
                 # Appends current row to distance table
-                self.distance_table.append(current_row)
+                self.table.append(current_row)
 
     def get_row(self, row_num):
         '''Returns the list found in row_num'''
-        return self.distance_table[int(row_num)]
+        return self.table[int(row_num)]
+
+

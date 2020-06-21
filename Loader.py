@@ -90,13 +90,21 @@ class Loader:
 def main():
     receiving = Loader()
     trucking = receiving.get_2nd_truck_packages()
-    print(len(trucking))
-    trucking = receiving.check_existing_list(trucking)
-    print(len(trucking))
-    trucking.extend(receiving.get_delayed_packages())
-    print(len(trucking))
-    trucking = receiving.check_existing_list(trucking)
-    print(len(trucking))
+    # urgent = receiving.get_urgent_packages()
+
+    for p in trucking: 
+        trucking = receiving.check_existing_list(trucking)
+
+    # for p in urgent:
+    #     urgent = receiving.check_existing_list(urgent)
+
+    print(f'Amount in truck 2: {len(trucking)}')
+    for p in trucking:
+        print(f'Second - {p.package_id:>02}')
+
+    # print(f'Amount left urget: {len(urgent)}')
+    # for p in urgent:
+    #     print(f'Urgent - {p.package_id:>02}')
 
 
 
