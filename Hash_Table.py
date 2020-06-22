@@ -1,4 +1,3 @@
-from Distance_Table import DistanceTable
 from Package import Package
 import csv
 import re
@@ -68,8 +67,6 @@ class HashTable:
                 priority_packages.extend(self.retrieve_packages_by_address_id(int(bucket.address_id)))
         
         return priority_packages
-                
-
 
     def load_from_csv(self, file_name='CSV_Data\packages.csv'):
         '''Loads data from csv into package_table & address_table'''
@@ -77,7 +74,6 @@ class HashTable:
         # Opens & reads from csv file and creates a distance table to read from
         with open(file_name) as csv_file:
             reader = csv.reader(csv_file, delimiter=',')
-            distances = DistanceTable()
 
             # Loop through each row in file, create package based on it's information
             for row in reader:
@@ -90,7 +86,6 @@ class HashTable:
                 package.deadline = row[6]
                 package.weight = row[7]
                 package.instructions = row[8]
-                package.distances = distances.get_row(int(row[1]))
                 self.address_table[int(row[1])].append(int(row[0]))
                 self.insert_package(package)
 
@@ -104,15 +99,14 @@ class HashTable:
         for index, bucket in enumerate(self.package_table):
             # If bucket contains a package, print it's ID & Address ID
             if type(bucket) == Package:
-                printout += f'Package ID = {bucket.package_id} & Address ID = {bucket.address_id}\n'
+                printout += f'Package ID = {bucket.package_id:>02} & Address ID = {bucket.address_id:>02}\n'
 
             # If bucket is empty, print out the index and delcare it empty
             else:
-                printout += f'No package in bucket #: {index}\n'
+                printout += f'No package in bucket #: {index:>02}\n'
         
         # Return built printout string
         return printout
-
 
 def main():
     tab = HashTable()
@@ -124,6 +118,8 @@ def main():
                 zips[package.zip_code] += 1
             else:
                 zips[package.zip_code] = 1
+
+    print(tab)
 
     print(zips)
 

@@ -17,7 +17,6 @@ class Package:
     weight: float = None
     status: str = 'At Hub'
     instructions: str = None
-    distances: List[float] = None
 
     def distance_to(self, address_id):
         return self.distances[address_id]
@@ -33,7 +32,6 @@ class Package:
         weight = {self.weight}
         status = {self.status}
         instructions = {self.instructions}
-        distances = {self.distances}
         '''
 
     def __eq__(self, other):
