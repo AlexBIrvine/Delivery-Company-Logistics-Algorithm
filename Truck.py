@@ -1,6 +1,18 @@
 from Package import Package
-from Loader import Loader
-from Distance_Table import DistanceTable
+from Hash_Table import HashTable
+
+class Edge:
+    '''
+    Helper class that represents edges in a tree.  
+    Used with the Truck class when finding the minimum spanning tree
+    '''
+
+    def __init__(self, fro, to, weight):
+        self.fro = fro
+        self.to = to
+        self.weight = weight
+
+
 
 class Truck:
     '''A truck class that stores and delivers packages'''
@@ -8,95 +20,128 @@ class Truck:
 
     def __init__(self, payload):
         '''Initializes truck with payload list of packages'''   
-        self.address_book = DistanceTable().table
+        self.address_book = HashTable().graph
         self.cargo = payload
-        self.priority_packages = []
-        self.regular_packages = []
+        self.edges = []
         self.millage = 0.0
         self.current_location = 0
 
-        self.sort_packages()
 
-
-    def sort_packages(self):
-        '''Sorts packages based on priority'''
-        
-        # Finds all packages that need to be delivered before EOD
-        for i in range(0, len(self.cargo)):
-                if self.cargo[i].deadline != 'EOD':
-                    self.priority_packages.append(self.cargo[i])
-                    self.cargo[i] = None
-
-        # Finds all packages that share an address already in priority_packages
-        for i in range(0, len(self.cargo)):
-            for j in range(0, len(self.priority_packages)):
-                if type(self.cargo[i]) == Package and type(self.priority_packages[j]) == Package:
-                    if self.cargo[i].address_id == self.priority_packages[j].address_id:
-                        self.priority_packages.append(self.cargo[i])
-                        self.cargo[i] = None
-
-        # For all remaining packages, place in regular_packages
-        for index, package in enumerate(self.cargo):
-            if type(package) == Package: 
-                self.regular_packages.append(self.cargo[index])
-                self.cargo[index] = None
-
-        # Removes all 'none' type from cargo
-        self.cargo = [i for i in self.cargo if i] 
-
-
-    def find_closest_package(self, address):
-        '''Searches for the next neighest address based on the packages left in the truck'''
-        closest_distance = float('inf') 
-        closest_package = 0
-
-        if len(self.priority_packages) > 0:
-            for i in range(0, len(self.priority_packages)):
-                row = self.address_book[int(address)]
-                if float(row[i]) < float(closest_distance): 
-                    closest_distance = row[i]
-                    closest_package = self.priority_packages[i]
-
-        else:
-            for i in range(0, len(self.regular_packages)):
-                row = self.address_book[int(address)]
-                if float(row[i]) < float(closest_distance): 
-                    closest_distance = row[i]
-                    closest_package = self.regular_packages[i]
-
-        return closest_package
-
-
+    # Rewritten, now clean up
     def deliver_package(self, package):
         '''delivers package'''
 
-        if package in self.priority_packages:
-            self.millage += float(self.address_book[int(self.current_location)][int(package.address_id)])
-            self.current_location = package.address_id
-            self.priority_packages.pop(self.priority_packages.index(package))
-
-        elif package in self.regular_packages:
-            self.millage += float(self.address_book[int(self.current_location)][int(package.address_id)])
-            self.current_location = package.address_id
-            self.regular_packages.pop(self.regular_packages.index(package))
-
-        else: 
-            self.millage += float(self.address_book[int(self.current_location)][0])
-            self.current_location = 0
-        
-        print(self)
+        self.millage += float(self.address_book[int(self.current_location)][int(package.address_id)])
+        print(f'Delivered package {package.package_id:>02} to location {package.address_id:>02} ', end='')        
+        print(f'taking {float(self.address_book[int(self.current_location)][int(package.address_id)])} miles ', end='')
+        print(f'for a total of {self.millage} miles')
+        self.current_location = package.address_id
+        package.status = 'DELIVERED'        # Make hashtable update instead?
 
 
+    # Rewritten, now clean up
     def run_deliveries(self):
         '''Delivers all packages on truck'''
 
-        while len(self.priority_packages) + len(self.regular_packages):
-            self.deliver_package(self.find_closest_package(self.current_location))
+        self.find_minimum_spanning_tree()
+        path = self.get_dfs_path()
+        deliveries = []
+
+        for address in path:
+            deliveries.extend(self.get_packages_from_address(address))
+
+        for package in deliveries:
+            self.deliver_package(package)
+
+        self.millage += float(self.address_book[int(self.current_location)][0])
+        self.current_location = 0
+
+
+    # Rewritten, now clean up
+    def get_packages_from_address(self, address):
+        '''Returns a packages from cargo in list form based on address_id'''
+
+        packages = []
+
+        # Iterates through a copy of cargo.  
+        # If package address matches address id, remove from cargo and add to packages
+        for package in self.cargo[:]:
+            if int(package.address_id) == int(address):
+                packages.append(self.cargo.pop(self.cargo.index(package)))
+
+        return packages
+
+
+    # Rewritten, now clean up
+    def find_minimum_spanning_tree(self):
+
+        addresses = [0]
+
+        for i in self.cargo:
+            if int(i.address_id) not in addresses:
+                addresses.append(int(i.address_id))
         
-        if self.current_location != 0:
-            self.deliver_package(self.find_closest_package(self.current_location))
+        num_address = len(addresses)
+        num_edges = 0
+        selected = [0] * num_address
+        selected[0] = True
+
+        while num_edges < num_address - 1:
+
+            smallest = float('inf')
+            fro = 0
+            to = 0
+
+            for i in range(num_address):
+                if selected[i]:
+                    for j in range(num_address):
+                        x = int(addresses[i])
+                        y = int(addresses[j])
+
+                        if ((not selected[j]) and self.address_book[x][y] != 0):
+                            if float(smallest) > float(self.address_book[x][y]):
+                                smallest = float(self.address_book[x][y])
+                                fro = x
+                                to = y
+            self.edges.append(Edge(fro, to, float(self.address_book[fro][to])))
+            selected[addresses.index(to)] = True
+            num_edges += 1
 
 
+    #Rewritten, now clean up
+    def get_dfs_path(self):
+
+        visited = [0]
+        unvisited = []
+
+        for i in self.cargo:
+            if int(i.address_id) not in unvisited:
+                unvisited.append(int(i.address_id))
+
+        current = 0
+
+        while unvisited:
+            found = False
+
+            for edge in self.edges:
+                if (int(edge.fro) == current) and (edge.to not in visited):
+                    visited.append(edge.to)
+                    unvisited.remove(int(edge.to))
+                    current = edge.to
+                    found = True
+            
+            if found == False:
+                for edge in self.edges:
+                    if int(edge.to) == current:
+                        visited.append(int(edge.fro))
+                        current = edge.fro
+                        break
+        
+        # Returns the path with duplicates removed
+        return list(dict.fromkeys(visited))
+
+
+    # No longer needed? 
     def __repr__(self):
         '''prints everything'''
         return_string = ''
@@ -118,43 +163,42 @@ class Truck:
 
         return return_string
 
+
+
+
 def main():
-    receiving = Loader()
+    receiving = HashTable()
+    receiving.update_package_nine()
+
+    nine = [receiving.retrieve_package(9)]
+
+    delayed = receiving.get_delayed_packages()
+    delayed = receiving.check_existing_list(delayed)
 
     second = receiving.get_2nd_truck_packages()
-    receiving.update_package_nine()
-    second.extend(receiving.get_delayed_packages())
     second = receiving.check_existing_list(second)
 
     urgent = receiving.get_urgent_packages()
     urgent = receiving.check_existing_list(urgent)
 
     remaining = receiving.get_remaining_packages()
+    remaining.extend(nine)
 
     truck_1 = Truck(urgent)
-    truck_2 = Truck(second)
+    truck_2 = Truck(second + delayed)
     truck_3 = Truck(remaining)
 
-    print('Truck 1')
-    print(truck_1)
 
-    print('Truck 2')
-    print(truck_2)
 
-    print('Truck 3')
-    print(truck_3)
+    # truck_1.run_deliveries()
+    # print(f'\nTotal miles for truck 1\t{truck_1.millage:>02} miles\n')
 
-    truck_1.run_deliveries()
-    truck_2.run_deliveries()
-    truck_3.run_deliveries()
+    # truck_2.run_deliveries()
+    # print(f'\nTotal miles for truck 2\t{truck_2.millage:>02} miles\n')
 
-    print(f'''
-    Truck 1 Millage = {truck_1.millage}
-    Truck 2 Millage = {truck_2.millage}
-    Truck 1 Millage = {truck_3.millage}
-    Total millage = {truck_1.millage + truck_2.millage + truck_3.millage}
-    ''')
-
+    # truck_3.run_deliveries()
+    # print(f'\nTotal miles for truck 3\t{truck_3.millage:>02} miles')
+    # print(f'\nTotal miles = {truck_1.millage + truck_2.millage + truck_3.millage}')
 
 if __name__ == "__main__":
     main()

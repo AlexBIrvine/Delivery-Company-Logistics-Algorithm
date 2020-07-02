@@ -6,10 +6,11 @@ import re
 class Loader:
     '''Loads packages onto truck'''
 
+
+
     def __init__(self):
         '''Creates a HashTable of packages named warehouse'''
         self.warehouse = HashTable()
-
 
     def get_delayed_packages(self):
         '''Returns a list of packages that are delayed which includes any packages with wrong addresses'''
@@ -24,7 +25,6 @@ class Loader:
 
         return delayed
 
-
     def get_urgent_packages(self):
         '''Returns a list of packages that have deadline before EOD'''
 
@@ -35,7 +35,6 @@ class Loader:
                 urgent.append(self.warehouse.retrieve_package(bucket.package_id))
         
         return urgent
-
 
     def get_2nd_truck_packages(self):
         '''Returns a list of packages that are restricted to the 2nd truck'''
@@ -48,7 +47,6 @@ class Loader:
 
         return second
 
-    
     def get_remaining_packages(self):
         '''Returns a list of packages left in the hash table'''
 
@@ -59,7 +57,6 @@ class Loader:
                 remaining.append(self.warehouse.retrieve_package(bucket.package_id))
 
         return remaining
-
 
     def check_and_get_bundled_packages(self, package):
         '''
@@ -77,7 +74,6 @@ class Loader:
 
         return bundled
 
-
     def check_and_get_same_addressed_packages(self, package):
         '''
         Checks if a package has other packages going to the same address as it.  
@@ -92,7 +88,6 @@ class Loader:
                 same_address.append(found)
 
         return same_address
-
 
     def check_existing_list(self, existing_list):
         '''
@@ -124,36 +119,13 @@ class Loader:
         self.warehouse.insert_package(nine)
 
 
+
+
+
+
+
 def main():
-    receiving = Loader()
-
-    second = receiving.get_2nd_truck_packages()
-    receiving.update_package_nine()
-    second.extend(receiving.get_delayed_packages())
-    second = receiving.check_existing_list(second)
-
-    urgent = receiving.get_urgent_packages()
-    urgent = receiving.check_existing_list(urgent)
-
-    remaining = receiving.get_remaining_packages()
-
-    second.sort(key=lambda x: int(x.address_id))
-    urgent.sort(key=lambda x: int(x.address_id))
-    remaining.sort(key=lambda x: int(x.address_id))
-
-    print(f'Second length = {len(second)}')
-    print(f'Urgent length = {len(urgent)}')
-    print(f'Remain length = {len(remaining)}\n')
-
-    for p in second:
-        print(f'Second - {p.package_id:>02}\t{p.address_id:>02}')
-    print()
-    for p in urgent:
-        print(f'Urgent - {p.package_id:>02}\t{p.address_id:>02}')
-    print()
-    for p in remaining:
-        print(f'Remain - {p.package_id:>02}\t{p.address_id:>02}')
-
+    print('Does nothing right now')
 
 if __name__ == "__main__":
     main()

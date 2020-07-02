@@ -1,8 +1,12 @@
-# 2020/6/21
+# Next steps
 
-# Next steps are:
+# Find the min spanning tree based on each, 
+# do a depth-first search for the path
+# based on that, find the hamiltonian path
+# that should be the route
 
-#  Add time to the tuck class
-#  Finish Loader class to load truck #1 & #3
-#  Fix Loader.check_existing_list()   it's pulling packages from exisisting list
-#  don't rely on NoneType, make things remove all packages once moved
+
+
+stuff = [1,2,3,4,5,6]
+
+print(stuff[-2])
