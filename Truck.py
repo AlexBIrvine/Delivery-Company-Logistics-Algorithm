@@ -13,7 +13,6 @@ class Edge:
         self.weight = weight
 
 
-
 class Truck:
     '''A truck class that stores and delivers packages'''
 
@@ -32,12 +31,9 @@ class Truck:
         '''delivers package'''
 
         self.millage += float(self.address_book[int(self.current_location)][int(package.address_id)])
-        print(f'Delivered package {package.package_id:>02} to location {package.address_id:>02} ', end='')        
-        print(f'taking {float(self.address_book[int(self.current_location)][int(package.address_id)])} miles ', end='')
-        print(f'for a total of {self.millage} miles')
+        print(f'Package {package.package_id:>02} at {package.address_id:>02} for {float(self.address_book[int(self.current_location)][int(package.address_id)]):>4.2} miles now at {self.millage}')
         self.current_location = package.address_id
-        package.status = 'DELIVERED'        # Make hashtable update instead?
-
+        package.status = 'DELIVERED at time...'        # Make hashtable update instead?
 
     # Rewritten, now clean up
     def run_deliveries(self):
@@ -56,7 +52,6 @@ class Truck:
         self.millage += float(self.address_book[int(self.current_location)][0])
         self.current_location = 0
 
-
     # Rewritten, now clean up
     def get_packages_from_address(self, address):
         '''Returns a packages from cargo in list form based on address_id'''
@@ -70,7 +65,6 @@ class Truck:
                 packages.append(self.cargo.pop(self.cargo.index(package)))
 
         return packages
-
 
     # Rewritten, now clean up
     def find_minimum_spanning_tree(self):
@@ -107,7 +101,6 @@ class Truck:
             selected[addresses.index(to)] = True
             num_edges += 1
 
-
     #Rewritten, now clean up
     def get_dfs_path(self):
 
@@ -137,68 +130,22 @@ class Truck:
                         current = edge.fro
                         break
         
+        
+   
         # Returns the path with duplicates removed
         return list(dict.fromkeys(visited))
 
+    def num_addresses(self):
+        '''Find the total number of unique addresses on truck and returns it'''
 
-    # No longer needed? 
-    def __repr__(self):
-        '''prints everything'''
-        return_string = ''
-
-        return_string += f'Current millage = {self.millage}\n'
-        return_string += f'Current location = {self.current_location}\n'
-        return_string += f'Total package left = {len(self.priority_packages) + len(self.regular_packages)}\n'
+        unique_addresses = []
 
         for p in self.cargo:
-            return_string += f'Cargo = {p}\n'
+            if p.address_id not in unique_addresses:
+                unique_addresses.append(p.address_id)
 
-        for p in self.priority_packages:
-            return_string += f'Priority\t{p.package_id:>02}\t{p.address_id:>02}\n'
+        return len(unique_addresses)
 
-        for p in self.regular_packages:
-            return_string += f'Regular\t\t{p.package_id:>02}\t{p.address_id:>02}\n'
-        
-        return_string += ''
-
-        return return_string
-
-
-
-
-def main():
-    receiving = HashTable()
-    receiving.update_package_nine()
-
-    nine = [receiving.retrieve_package(9)]
-
-    delayed = receiving.get_delayed_packages()
-    delayed = receiving.check_existing_list(delayed)
-
-    second = receiving.get_2nd_truck_packages()
-    second = receiving.check_existing_list(second)
-
-    urgent = receiving.get_urgent_packages()
-    urgent = receiving.check_existing_list(urgent)
-
-    remaining = receiving.get_remaining_packages()
-    remaining.extend(nine)
-
-    truck_1 = Truck(urgent)
-    truck_2 = Truck(second + delayed)
-    truck_3 = Truck(remaining)
-
-
-
-    # truck_1.run_deliveries()
-    # print(f'\nTotal miles for truck 1\t{truck_1.millage:>02} miles\n')
-
-    # truck_2.run_deliveries()
-    # print(f'\nTotal miles for truck 2\t{truck_2.millage:>02} miles\n')
-
-    # truck_3.run_deliveries()
-    # print(f'\nTotal miles for truck 3\t{truck_3.millage:>02} miles')
-    # print(f'\nTotal miles = {truck_1.millage + truck_2.millage + truck_3.millage}')
-
-if __name__ == "__main__":
-    main()
+# delay_i = [1,2,4,6,7,17,22,24,25,26,28,29,31,32,33,40]
+# must_sec = [3,8,10,13,14,15,16,18,19,20,30,34,36,37,38,39]
+# third_i = [5,9,11,12,21,23,27,35]
