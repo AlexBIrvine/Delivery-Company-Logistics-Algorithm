@@ -24,9 +24,10 @@ class HashTable:
             self.package_table.append(None)
             self.address_table.append([])
 
-        # Loads data from csv into tables
+        # Loads data from csv into tables & updates package 9
         self.table_from_csv()
         self.graph_from_csv()
+        self.update_package_nine()
 
 
     def insert_package(self, package):
@@ -43,7 +44,6 @@ class HashTable:
         # If package found in bucket, set that bucket to none and return the package
         if type(self.package_table[bucket]) != None:
             package = self.package_table[bucket]
-            self.package_table[bucket] = None
             return package
 
     def handload_truck_1(self):
@@ -148,3 +148,63 @@ class HashTable:
         # Insets package back into package_graph
         self.insert_package(nine)
 
+    # NEED TO TEST
+    def update_package(self, package, value, attribute = 'status'):
+        '''
+        Updates the <attribute> of the <package> with <value>
+        '''
+
+        if attribute == 'address':
+            package.address = value
+        elif attribute == 'deadline':
+            package.deadline = value
+        elif attribute == 'city':
+            package.city = value
+        elif attribute == 'zip':
+            package.zip_code = value
+        elif attribute == 'weight':
+            package.weight = value
+        elif attribute == 'status':
+            package.status = value
+
+    # NEED TO TEST
+    def lookup_package(self, attribute, value):
+        '''
+        Returns a list of all packages that match the <value> of a given <attribute>. 
+        Removes whitespace from <value> and converts to lowercase for reliable searching.
+        '''
+
+        found = []
+        value = value.strip().lower()
+
+        for p in self.package_table:
+            if type(p) == Package and attribute == 'address' and p.address.strip().lower() == value:
+                found.append(p)
+            elif type(p) == Package and attribute == 'deadline' and p.deadline.strip().lower() == value:
+                found.append(p)
+            elif type(p) == Package and attribute == 'city' and p.city.strip().lower() == value:
+                found.append(p)
+            elif type(p) == Package and attribute == 'zip' and p.zip.strip().lower() == value:
+                found.append(p)    
+            elif type(p) == Package and attribute == 'weight' and p.weight.strip().lower() == value:
+                found.append(p)
+            elif type(p) == Package and attribute == 'status' and p.status.strip().lower() == value:
+                found.append(p)
+        
+        return found
+
+
+    def __repr__(self):
+        '''
+        Prints a table of the package's ID, DEADLINE & STATUS.  
+        Used to check if deliveries are arriving on time.  
+        '''
+
+        return_string = 'ID\tDEADLINE\t             STATUS\n'
+        return_string += '---------------------------------------------------------\n'
+
+        for p in self.package_table:
+            if type(p) == Package:
+                return_string += f'{p.package_id}\t{p.deadline:<8}\t{p.status}\n'
+        
+        return return_string

@@ -1,5 +1,7 @@
 from Package import Package
 from Hash_Table import HashTable
+from decimal import Decimal
+import datetime
 
 class Edge:
     '''
@@ -17,27 +19,86 @@ class Truck:
     '''A truck class that stores and delivers packages'''
 
 
-    def __init__(self, payload):
+    def __init__(self, payload, start_time, truck_num, warehouse):
         '''Initializes truck with payload list of packages'''   
-        self.address_book = HashTable().graph
+        self.warehouse = warehouse
+        self.address_book = self.warehouse.graph
+        self.time = start_time
         self.cargo = payload
+        self.number = truck_num
         self.edges = []
         self.millage = 0.0
         self.current_location = 0
+        self.miles_to_next = 0.0
+
+        # Runs the sort_package method to order packages by delivery order, 
+        # 
+        self.sort_packages()
+        self.find_miles_to_next()
+
+
+    def find_miles_to_next(self):
+        '''
+        Finds the miles to the next package and updates miles_to_next.
+        '''
+        self.miles_to_next += round(float(self.address_book[int(self.current_location)][int(self.cargo[0].address_id)]), 1)
 
 
     # Rewritten, now clean up
     def deliver_package(self, package):
-        '''delivers package'''
+        '''
+        Delivers package passed in as argument.  
+        This will get the miles between truck's current address and the packages address, 
+        update the total miles driven for the tuck, 
+        update the time of the truck, 
+        update the current location of the tuck, 
+        and set the status of the package with details of delivery.  
+        '''
 
-        self.millage += float(self.address_book[int(self.current_location)][int(package.address_id)])
-        print(f'Package {package.package_id:>02} at {package.address_id:>02} for {float(self.address_book[int(self.current_location)][int(package.address_id)]):>4.2} miles now at {self.millage}')
+        # miles_driven = round(float(self.address_book[int(self.current_location)][int(package.address_id)]), 1)
+        # self.millage += round(miles_driven,1)
+        # self.update_time(miles_driven)
+        self.find_miles_to_next()
         self.current_location = package.address_id
-        package.status = 'DELIVERED at time...'        # Make hashtable update instead?
+        status = f'DELIVERED at {self.time.time()} on truck #{self.number}'
+        self.warehouse.update_package(package, status)
+
+    def deliver_next(self):
+        '''
+        Delivers the next package cargo.  
+        If no package is left in cargo and truck is not at the hub, returns to hub.  
+        '''
+
+        if len(self.cargo) > 0:
+            self.deliver_package(self.cargo.pop(0))
+        elif len(self.cargo) == 0 and self.current_location != 0:
+            self.millage += round(float(self.address_book[int(self.current_location)][0]), 1)
+            self.current_location = 0
+
+    def tick(self):
+        '''
+        Moves the truck 0.1 miles and delivers a package if at location
+        '''
+
+        if round(self.millage, 1) == round(self.miles_to_next, 1):
+            self.deliver_next()
+        else:
+            self.millage += round(0.1, 1)
+            self.update_time(0.1)
+
+
+    # NOW BROKEN -- Need to fix, issue lies in updating miles to next
+    def run_deliveries(self):
+        '''delivers all packages'''
+        while len(self.cargo) > 0:
+            self.tick()
+        
 
     # Rewritten, now clean up
-    def run_deliveries(self):
-        '''Delivers all packages on truck'''
+    def sort_packages(self):
+        '''
+        Sorts packages in cargo in order of the shortest path.  
+        '''
 
         self.find_minimum_spanning_tree()
         path = self.get_dfs_path()
@@ -46,11 +107,7 @@ class Truck:
         for address in path:
             deliveries.extend(self.get_packages_from_address(address))
 
-        for package in deliveries:
-            self.deliver_package(package)
-
-        self.millage += float(self.address_book[int(self.current_location)][0])
-        self.current_location = 0
+        self.cargo = deliveries
 
     # Rewritten, now clean up
     def get_packages_from_address(self, address):
@@ -146,6 +203,20 @@ class Truck:
 
         return len(unique_addresses)
 
-# delay_i = [1,2,4,6,7,17,22,24,25,26,28,29,31,32,33,40]
-# must_sec = [3,8,10,13,14,15,16,18,19,20,30,34,36,37,38,39]
-# third_i = [5,9,11,12,21,23,27,35]
+    def update_time(self, miles):
+        '''
+        Updates current time of truck based on miles driven. 
+        All trucks within this project drive at a constant 18 MPH, 
+        or 200 seconds per mile. 
+        '''
+
+        SECONDS_PER_MILE = 200
+        driven = datetime.timedelta(0, SECONDS_PER_MILE * miles)
+        self.time += driven
+
+    def __repr__(self):
+        '''
+        Returns a string for the status of the truck.  
+        Includes total packages on truck, millage & time.
+        '''
+        return f'Truck #{self.number}\nPackage count =\t{len(self.cargo)}\nMilliage =\t{round(self.millage, 1)}\nMiles to next = {round(self.miles_to_next, 1)}\nTime =\t\t{self.time.time()}\n'
