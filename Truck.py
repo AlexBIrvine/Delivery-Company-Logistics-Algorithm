@@ -30,6 +30,7 @@ class Truck:
         self.millage = 0.0
         self.current_location = 0
         self.miles_to_next = 0.0
+        self.status = 'AT HUB, START OF DAY'
 
         # Runs the sort_package method to order packages by delivery order, 
         # 
@@ -41,58 +42,48 @@ class Truck:
         '''
         Finds the miles to the next package and updates miles_to_next.
         '''
-        self.miles_to_next += round(float(self.address_book[int(self.current_location)][int(self.cargo[0].address_id)]), 1)
+
+        if len(self.cargo) > 0:
+            self.miles_to_next += float(self.address_book[int(self.current_location)][int(self.cargo[0].address_id)])
+        else:
+            self.miles_to_next += float(self.address_book[int(self.current_location)][0])
 
 
     # Rewritten, now clean up
-    def deliver_package(self, package):
+    def deliver_package(self):
         '''
-        Delivers package passed in as argument.  
-        This will get the miles between truck's current address and the packages address, 
-        update the total miles driven for the tuck, 
-        update the time of the truck, 
-        update the current location of the tuck, 
-        and set the status of the package with details of delivery.  
+        Rewrite
         '''
-
-        # miles_driven = round(float(self.address_book[int(self.current_location)][int(package.address_id)]), 1)
-        # self.millage += round(miles_driven,1)
-        # self.update_time(miles_driven)
+        self.current_location = self.cargo[0].address_id
+        self.warehouse.update_package(self.cargo[0], f'DELIVERED at {self.time.time()} on truck #{self.number}')
+        self.cargo.pop(0)
         self.find_miles_to_next()
-        self.current_location = package.address_id
-        status = f'DELIVERED at {self.time.time()} on truck #{self.number}'
-        self.warehouse.update_package(package, status)
 
-    def deliver_next(self):
-        '''
-        Delivers the next package cargo.  
-        If no package is left in cargo and truck is not at the hub, returns to hub.  
-        '''
 
-        if len(self.cargo) > 0:
-            self.deliver_package(self.cargo.pop(0))
-        elif len(self.cargo) == 0 and self.current_location != 0:
-            self.millage += round(float(self.address_book[int(self.current_location)][0]), 1)
-            self.current_location = 0
 
     def tick(self):
         '''
         Moves the truck 0.1 miles and delivers a package if at location
         '''
+        # There are more packages to deliver
+        if len(self.cargo) > 0:
+            self.status = f'Traveling to location {self.cargo[0].address_id}'
+            self.travel(0.1)
 
-        if round(self.millage, 1) == round(self.miles_to_next, 1):
-            self.deliver_next()
-        else:
-            self.millage += round(0.1, 1)
-            self.update_time(0.1)
+            while round(self.millage, 1) == round(self.miles_to_next, 1):
+                self.deliver_package()
 
-
-    # NOW BROKEN -- Need to fix, issue lies in updating miles to next
-    def run_deliveries(self):
-        '''delivers all packages'''
-        while len(self.cargo) > 0:
-            self.tick()
+        # Truck needs to return to hub
+        elif len(self.cargo) == 0 and round(self.millage, 1) != round(self.miles_to_next, 1):
+            self.status = f'Returning to hub'
+            self.travel(0.1)
         
+        # Truck is at the hub, update status
+        else: 
+            self.current_location = 0
+            self.status = 'Deliveries complete'
+
+
 
     # Rewritten, now clean up
     def sort_packages(self):
@@ -203,9 +194,9 @@ class Truck:
 
         return len(unique_addresses)
 
-    def update_time(self, miles):
+    def travel(self, miles):
         '''
-        Updates current time of truck based on miles driven. 
+        Updates current time and millage of truck based on miles driven. 
         All trucks within this project drive at a constant 18 MPH, 
         or 200 seconds per mile. 
         '''
@@ -213,10 +204,24 @@ class Truck:
         SECONDS_PER_MILE = 200
         driven = datetime.timedelta(0, SECONDS_PER_MILE * miles)
         self.time += driven
+        self.millage += miles
 
     def __repr__(self):
         '''
         Returns a string for the status of the truck.  
         Includes total packages on truck, millage & time.
         '''
-        return f'Truck #{self.number}\nPackage count =\t{len(self.cargo)}\nMilliage =\t{round(self.millage, 1)}\nMiles to next = {round(self.miles_to_next, 1)}\nTime =\t\t{self.time.time()}\n'
+
+        return_string = f'Truck #{self.number} -- {self.status}\n'
+        return_string += f'Package count =\t{len(self.cargo)}\n'
+        return_string += f'Millage =\t{round(self.millage, 1)}\n'
+
+        if len(self.cargo) == 0 and round(self.millage, 1) == round(self.miles_to_next, 1):
+            return_string += f''
+        else: 
+            return_string += f'Miles to next = {round(self.miles_to_next, 1)}\n'
+        
+        if self.status != 'AT HUB, START OF DAY':
+            return_string += f'Time =\t\t{self.time.time()}\n'
+
+        return return_string

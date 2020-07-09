@@ -1,5 +1,9 @@
-Left todo:
+# C955 (SQL) Study Hall
 
-- Add time tracking to truck
-- Have truck modify package data and insert back into hash table for storage
-- Create the UI
+## General 
+- Attendance was taken to gauge interest in study hall sessions. 
+- Quiet bunch...
+
+## Study help
+
+Book (version on WGU library):  OCA Oracle (Database SQL 1ZO-071)

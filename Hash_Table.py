@@ -22,7 +22,6 @@ class HashTable:
         # Creates blank bucket_lists for each bucket in the table
         for bucket in range(capacity):
             self.package_table.append(None)
-            self.address_table.append([])
 
         # Loads data from csv into tables & updates package 9
         self.table_from_csv()
@@ -194,17 +193,33 @@ class HashTable:
         return found
 
 
-    def __repr__(self):
+    def print_buckets(self):
         '''
-        Prints a table of the package's ID, DEADLINE & STATUS.  
-        Used to check if deliveries are arriving on time.  
+        Prints a list of each bucket in Hash Table and it's contents
         '''
 
-        return_string = 'ID\tDEADLINE\t             STATUS\n'
-        return_string += '---------------------------------------------------------\n'
+        print_string = 'INDEX           CONTENT\n'
+        print_string += '--------------------------------------\n'
+
+        for i, p in enumerate(self.package_table):
+            if type(p) == Package:
+                print_string += f'{i:>02}\tPackage with ID {p.package_id:>02} stored here\n'
+            else:
+                print_string += f'{i:>02}\tEMPTY BUCKET\n'
+        
+        print(print_string)
+            
+
+    def __repr__(self):
+        '''
+        Prints a table of the package's ID, ADDRESS, DEADLINE, STATUS & INSTRUCTIONS.  
+        '''
+
+        return_string = 'ID       ADDRESS                                      CITY             ZIP      DEADLINE         STATUS                                   INSTRUCTIONS\n'
+        return_string += '---------------------------------------------------------------------------------------------------------------------------------------------------------------\n'
 
         for p in self.package_table:
             if type(p) == Package:
-                return_string += f'{p.package_id}\t{p.deadline:<8}\t{p.status}\n'
+                return_string += f'{p.package_id}\t{p.address:<42} {p.city:<18} {p.zip_code}\t{p.deadline:<8}\t{p.status:<35}\t{p.instructions}\n'
         
         return return_string

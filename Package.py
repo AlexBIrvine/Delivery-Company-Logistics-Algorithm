@@ -9,7 +9,7 @@ class Package:
 
     package_id: int
     address_id: int = None
-    site_name: str = None
+    # site_name: str = None
     address: str = None
     deadline: str = None
     city: str = None
