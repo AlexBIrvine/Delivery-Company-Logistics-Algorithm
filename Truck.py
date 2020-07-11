@@ -18,9 +18,13 @@ class Edge:
 class Truck:
     '''A truck class that stores and delivers packages'''
 
-
+    # Needs finalization
     def __init__(self, payload, start_time, truck_num, warehouse):
-        '''Initializes truck with payload list of packages'''   
+        '''
+        Initializes truck with payload list of packages, the truck number, and a reference to the Hash Table.
+        '''   
+
+        # Attributes for the truck class
         self.warehouse = warehouse
         self.address_book = self.warehouse.graph
         self.time = start_time
@@ -33,14 +37,15 @@ class Truck:
         self.status = 'AT HUB, START OF DAY'
 
         # Runs the sort_package method to order packages by delivery order, 
-        # 
+        # Also finds and sets the miles to the next package in the list.  
         self.sort_packages()
         self.find_miles_to_next()
 
-
+    # Needs finalization
     def find_miles_to_next(self):
         '''
         Finds the miles to the next package and updates miles_to_next.
+        Big O(1)
         '''
 
         if len(self.cargo) > 0:
@@ -48,8 +53,7 @@ class Truck:
         else:
             self.miles_to_next += float(self.address_book[int(self.current_location)][0])
 
-
-    # Rewritten, now clean up
+    # Needs finalization
     def deliver_package(self):
         '''
         Rewrite
@@ -59,8 +63,7 @@ class Truck:
         self.cargo.pop(0)
         self.find_miles_to_next()
 
-
-
+    # Needs finalization
     def tick(self):
         '''
         Moves the truck 0.1 miles and delivers a package if at location
@@ -83,9 +86,7 @@ class Truck:
             self.current_location = 0
             self.status = 'Deliveries complete'
 
-
-
-    # Rewritten, now clean up
+    # Needs finalization
     def sort_packages(self):
         '''
         Sorts packages in cargo in order of the shortest path.  
@@ -100,7 +101,7 @@ class Truck:
 
         self.cargo = deliveries
 
-    # Rewritten, now clean up
+    # Needs finalization
     def get_packages_from_address(self, address):
         '''Returns a packages from cargo in list form based on address_id'''
 
@@ -114,7 +115,7 @@ class Truck:
 
         return packages
 
-    # Rewritten, now clean up
+    # Needs finalization
     def find_minimum_spanning_tree(self):
 
         addresses = [0]
@@ -149,7 +150,7 @@ class Truck:
             selected[addresses.index(to)] = True
             num_edges += 1
 
-    #Rewritten, now clean up
+    # Needs finalization
     def get_dfs_path(self):
 
         visited = [0]
@@ -183,6 +184,7 @@ class Truck:
         # Returns the path with duplicates removed
         return list(dict.fromkeys(visited))
 
+    # Needs finalization
     def num_addresses(self):
         '''Find the total number of unique addresses on truck and returns it'''
 
@@ -194,6 +196,7 @@ class Truck:
 
         return len(unique_addresses)
 
+    # Needs finalization
     def travel(self, miles):
         '''
         Updates current time and millage of truck based on miles driven. 
@@ -206,6 +209,7 @@ class Truck:
         self.time += driven
         self.millage += miles
 
+    # Needs finalization
     def __repr__(self):
         '''
         Returns a string for the status of the truck.  

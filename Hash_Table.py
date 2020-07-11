@@ -2,13 +2,16 @@ from Package import Package
 import csv
 import re
 
+
 class HashTable:
     '''
+    # Needs finalization
+
     Hash table that stores all package data.  
     Implements direct hashing using the package ID as the key.
     '''
 
-
+    # Needs finalization
     def  __init__(self, capacity=50):
         '''
         Initializes a HashTable with buckets equal to the capacity (default = 50).
@@ -17,24 +20,50 @@ class HashTable:
         # Initializes package & address table.  
         self.package_table = []
         self.address_table = []
+        self.num_addresses = 0
         self.graph = []
 
         # Creates blank bucket_lists for each bucket in the table
         for bucket in range(capacity):
             self.package_table.append(None)
+            self.address_table.append([])
 
-        # Loads data from csv into tables & updates package 9
+        # Loads data from csv into tables
         self.table_from_csv()
         self.graph_from_csv()
-        self.update_package_nine()
+        self.count_num_addresses()
 
+    def count_num_addresses(self):
+        '''
+        Updates the number of addresses found in package_table
+        Space-time complexity =  O(N)
+        '''
 
+        # Creates a list for holding unique address_id's
+        # Initializes it with hub ID since hub isn't in package_table
+        addresses = [0]
+
+        # For each bucket, if it contains a package,
+        #  and that package has an address_id not found in addresses, 
+        #  add address_id to addresses
+        for p in self.package_table:
+            if type(p) == Package and p.address_id not in addresses:
+                addresses.append(p.address_id)
+        
+        # Sets num_addresses to the length of addresses
+        self.num_addresses = len(addresses)
+
+    # Needs finalization
     def insert_package(self, package):
         '''Takes package as argument, hashes it based on id, and inserts the package into table'''
 
         bucket = package.package_id % len(self.package_table)
         self.package_table[bucket] = package
 
+        # Updates num_addresses
+        self.count_num_addresses()
+
+    # Needs finalization
     def retrieve_package(self, package_id):
         '''Retrieves package by ID'''
 
@@ -45,6 +74,7 @@ class HashTable:
             package = self.package_table[bucket]
             return package
 
+    # Needs finalization
     def handload_truck_1(self):
         '''
         Helper method to load truck 1.
@@ -59,6 +89,7 @@ class HashTable:
         
         return packages
 
+    # Needs finalization
     def handload_truck_2(self):
         '''
         Helper method to load truck 2.
@@ -73,6 +104,7 @@ class HashTable:
         
         return packages
 
+    # Needs finalization
     def handload_truck_3(self):
         '''
         Helper method to load truck 3.
@@ -87,6 +119,7 @@ class HashTable:
         
         return packages
 
+    # Needs finalization
     def table_from_csv(self, file_name='CSV_Data\packages.csv'):
         '''Loads data from csv into package_table & address_table'''
 
@@ -108,6 +141,7 @@ class HashTable:
                 self.address_table[int(row[1])].append(int(row[0]))
                 self.insert_package(package)
 
+    # Needs finalization
     def graph_from_csv(self, file_name='CSV_Data\distances-filled.csv'):
         '''Loads data from csv into graph'''
         
@@ -130,6 +164,7 @@ class HashTable:
                 # Appends current row to distance graph
                 self.graph.append(current_row)
 
+    # Needs finalization
     def update_package_nine(self):
         '''
         Corrects the address for package #9
@@ -167,7 +202,7 @@ class HashTable:
             package.status = value
 
     # NEED TO TEST
-    def lookup_package(self, attribute, value):
+    def lookup_packages(self, attribute, value):
         '''
         Returns a list of all packages that match the <value> of a given <attribute>. 
         Removes whitespace from <value> and converts to lowercase for reliable searching.
@@ -177,22 +212,22 @@ class HashTable:
         value = value.strip().lower()
 
         for p in self.package_table:
-            if type(p) == Package and attribute == 'address' and p.address.strip().lower() == value:
+            if type(p) == Package and attribute == 'address' and value in p.address.strip().lower():
                 found.append(p)
-            elif type(p) == Package and attribute == 'deadline' and p.deadline.strip().lower() == value:
+            elif type(p) == Package and attribute == 'deadline' and value in p.deadline.strip().lower():
                 found.append(p)
-            elif type(p) == Package and attribute == 'city' and p.city.strip().lower() == value:
+            elif type(p) == Package and attribute == 'city' and value in p.city.strip().lower():
                 found.append(p)
-            elif type(p) == Package and attribute == 'zip' and p.zip.strip().lower() == value:
+            elif type(p) == Package and attribute == 'zip_code' and value in p.zip_code.strip().lower():
                 found.append(p)    
             elif type(p) == Package and attribute == 'weight' and p.weight.strip().lower() == value:
                 found.append(p)
-            elif type(p) == Package and attribute == 'status' and p.status.strip().lower() == value:
+            elif type(p) == Package and attribute == 'status' and value in p.status.strip().lower():
                 found.append(p)
         
         return found
 
-
+    # Needs finalization
     def print_buckets(self):
         '''
         Prints a list of each bucket in Hash Table and it's contents
@@ -208,8 +243,8 @@ class HashTable:
                 print_string += f'{i:>02}\tEMPTY BUCKET\n'
         
         print(print_string)
-            
 
+    # Needs finalization
     def __repr__(self):
         '''
         Prints a table of the package's ID, ADDRESS, DEADLINE, STATUS & INSTRUCTIONS.  
