@@ -1,3 +1,8 @@
+# Alex Irvine
+# C950 submission
+# WGU Student # 000955107
+# Date = 2020/7/12
+
 from dataclasses import dataclass
 from typing import List
 
@@ -18,28 +23,20 @@ class Package:
     status: str = 'At Hub'
     instructions: str = None
 
-    # Needs finalization  (DELETE???)
-    def distance_to(self, address_id):
-        return self.distances[address_id]
-
-    # Needs finalization (DELETE???)
-    def __repr__(self):
-        return f'''
-        ID = {self.package_id}
-        A_ID = {self.address_id}
-        address = {self.address}
-        deadline = {self.deadline}
-        city = {self.city}
-        zip code = {self.zip_code}
-        weight = {self.weight}
-        status = {self.status}
-        instructions = {self.instructions}
-        '''
-
-    # Needs finalization
     def __str__(self):
+        '''
+        Returns a string of the package attributes.  
+        Primarily used in other functions for printing a table. 
+
+        Space-time complexity = O(1)
+        '''
         return f'ID = {self.package_id:>02}\t\tAddress = [{self.address_id:>02}] {self.address:>39} {self.city:>16},{self.state:<2} {self.zip_code:<15}Weight = {self.weight:<3}\t\tInstruction = {self.instructions:<60}\t\tStatus = {self.status}'
 
-    # Needs finalization
     def __eq__(self, other):
+        '''
+        Method used to compare the equality of two packages.  
+        Equality for packages is based on package_id.  
+
+        Space-time complexity = O(1)
+        '''
         return self.package_id == other.package_id
