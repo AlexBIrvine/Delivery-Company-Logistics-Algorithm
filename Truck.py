@@ -1,3 +1,8 @@
+# Alex Irvine
+# C950 submission
+# WGU Student # 000955107
+# Date = 2020/7/12
+
 from Package import Package
 from Hash_Table import HashTable
 from decimal import Decimal
@@ -18,7 +23,6 @@ class Edge:
 class Truck:
     '''A truck class that stores and delivers packages'''
 
-    # Needs finalization
     def __init__(self, payload, start_time, truck_num, warehouse):
         '''
         Initializes truck with payload list of packages, the truck number, and a reference to the Hash Table.
@@ -41,42 +45,49 @@ class Truck:
         self.sort_packages()
         self.find_miles_to_next()
 
-    # Needs finalization
     def find_miles_to_next(self):
         '''
         Finds the miles to the next package and updates miles_to_next.
-        Big O(1)
+
+        Space-time complexity = O(1)
         '''
 
+        # If there are packages left to deliver, find millage from current location to next
         if len(self.cargo) > 0:
             self.miles_to_next += float(self.address_book[int(self.current_location)][int(self.cargo[0].address_id)])
+
+        # Otherwise find millage from current location to hub
         else:
             self.miles_to_next += float(self.address_book[int(self.current_location)][0])
 
-    # Needs finalization
     def deliver_package(self):
         '''
-        Rewrite
+        Delivers the next package in cargo.  
+        Updates the current location, package status in hash table, and miles to next.  
+
+        Space-time complexity = O(1)
         '''
         self.current_location = self.cargo[0].address_id
         self.warehouse.update_package(self.cargo[0], f'DELIVERED at {self.time.time()} on truck #{self.number}')
         self.cargo.pop(0)
         self.find_miles_to_next()
 
-    # Needs finalization
     def tick(self):
         '''
-        Moves the truck 0.1 miles and delivers a package if at location
+        Moves the truck 0.1 miles and delivers a package if at location.  
+
+        Space-time complexity = O(1)
         '''
-        # There are more packages to deliver
+        # When there are more packages to deliver, update status and travel towards destination
         if len(self.cargo) > 0:
             self.status = f'Traveling to location {self.cargo[0].address_id}'
             self.travel(0.1)
 
+            # If millage matches miles to next (therefor at destination), deliver package
             while round(self.millage, 1) == round(self.miles_to_next, 1):
                 self.deliver_package()
 
-        # Truck needs to return to hub
+        # If there are no more packages and truck not at hub, return to hub
         elif len(self.cargo) == 0 and round(self.millage, 1) != round(self.miles_to_next, 1):
             self.status = f'Returning to hub'
             self.travel(0.1)
@@ -89,7 +100,7 @@ class Truck:
     # Needs finalization
     def sort_packages(self):
         '''
-        Sorts packages in cargo in order of the shortest path.  
+        Sorts packages in cargo in order of the shortest path.
         '''
 
         self.find_minimum_spanning_tree()
@@ -101,52 +112,81 @@ class Truck:
 
         self.cargo = deliveries
 
-    # Needs finalization
     def get_packages_from_address(self, address):
-        '''Returns a packages from cargo in list form based on address_id'''
+        '''
+        Returns a packages from cargo in list form based on address_id
 
+        Space-time complexity = O(N)
+        '''
+
+        # Initializes list to store packages to return
         packages = []
 
-        # Iterates through a copy of cargo.  
+        # Iterates through a copy of cargo.
         # If package address matches address id, remove from cargo and add to packages
         for package in self.cargo[:]:
             if int(package.address_id) == int(address):
                 packages.append(self.cargo.pop(self.cargo.index(package)))
 
+        # Returns list of packages
         return packages
 
-    # Needs finalization
     def find_minimum_spanning_tree(self):
+        '''
+        Uses Primm's algorithm to find a minimum spanning tree.  
 
+        Space-time complexity = O(Log N)
+        '''
+
+        # List used for spanning tree path
         addresses = [0]
 
+        # Updates addresses with unique address ID's for packages found in cargo
         for i in self.cargo:
             if int(i.address_id) not in addresses:
                 addresses.append(int(i.address_id))
-        
+
+        # Initializes local variables
         num_address = len(addresses)
         num_edges = 0
         selected = [0] * num_address
         selected[0] = True
 
+        # While there are more edges to be found...
         while num_edges < num_address - 1:
 
+            # Set loop variables
             smallest = float('inf')
             fro = 0
             to = 0
 
+            # For each address...
             for i in range(num_address):
+
+                # Checks if that address is currently in list "selected"
+                # If the address is in selected, it has been visited.
                 if selected[i]:
+
+                    # Checks each address...
                     for j in range(num_address):
                         x = int(addresses[i])
                         y = int(addresses[j])
 
-                        if ((not selected[j]) and self.address_book[x][y] != 0):
+                        # If address j is not selected and x,y is not equal to zero, 
+                        # Then this node in the tree is valid to check if it's the current closest node.  
+                        if ( (not selected[j]) and self.address_book[x][y] != 0 ):
+
+                            # If this node is the current closest, update fro/to with addresses and update smallest
                             if float(smallest) > float(self.address_book[x][y]):
                                 smallest = float(self.address_book[x][y])
                                 fro = x
                                 to = y
+
+            # After loop, fro/to will be the smallest remaining edge to address 'to' that hasn't been visited yet.
+            # Create and add edge with this info...
             self.edges.append(Edge(fro, to, float(self.address_book[fro][to])))
+
+            # ...add address to selected and increment num_edges
             selected[addresses.index(to)] = True
             num_edges += 1
 

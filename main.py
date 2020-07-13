@@ -17,8 +17,6 @@ truck2 = Truck(receiveing.handload_truck_2(), datetime(2020,1,1,8,00), 2, receiv
 truck3 = Truck(receiveing.handload_truck_3(), datetime(2020,1,1,23,59), 3, receiveing)
 
 
-
-# Double check Big O notation
 def run_deliveries(delivery_time = datetime(2020,1,1,23,59)):
     '''
     Runs the deliveries of all 3 trucks until global time matches delivery time.  
