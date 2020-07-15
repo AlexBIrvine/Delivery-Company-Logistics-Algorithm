@@ -97,19 +97,26 @@ class Truck:
             self.current_location = 0
             self.status = 'Deliveries complete'
 
-    # Needs finalization
     def sort_packages(self):
         '''
         Sorts packages in cargo in order of the shortest path.
+
+        Space-time complexity = O(N^2)  <-- Most complex algorithm used in method is get_dfs_path()
         '''
 
+        # Finds minimal spanning tree, 
+        #  Then uses a depth first search to order sort packages
         self.find_minimum_spanning_tree()
         path = self.get_dfs_path()
+
+        # Initializes list for delivery order
         deliveries = []
 
+        # Converts address ID's into packages, adds package to deliveries list
         for address in path:
             deliveries.extend(self.get_packages_from_address(address))
 
+        # Converts cargo to deliveries, which holds all the same packages but now in proper order
         self.cargo = deliveries
 
     def get_packages_from_address(self, address):
@@ -190,58 +197,81 @@ class Truck:
             selected[addresses.index(to)] = True
             num_edges += 1
 
-    # Needs finalization
     def get_dfs_path(self):
+        '''
+        Implementation of a depth first search for getting the delivery order of packages from minimum spanning tree.  
+        This will start at the hub, travel down the minimum spanning tree as far as it can go, then reverse direction 1 space until it can find new nodes.  
+        This will add nodes in visitation order to a "visited" list, which will be used for the truck delivery order. 
 
+        Space-time complexity = O(N^2)
+        '''
+        
+        # Initializes visited and unvisited lists & current index
         visited = [0]
         unvisited = []
+        current = 0
 
+        # Populates unvisited list with every address ID
         for i in self.cargo:
             if int(i.address_id) not in unvisited:
                 unvisited.append(int(i.address_id))
-
-        current = 0
-
+        
+        # While there are still unvisited nodes...
         while unvisited:
             found = False
 
+            # ... Check every node from current destingation to see if it unvisited.  
             for edge in self.edges:
+
+                # If the destination of the edge has not been visited, 
+                #  add destination to visited, remove from unvisited, 
+                #  and update found flag with true.  
                 if (int(edge.fro) == current) and (edge.to not in visited):
                     visited.append(edge.to)
                     unvisited.remove(int(edge.to))
                     current = edge.to
                     found = True
             
+            # If each edge has been checked and there are no unvisited nodes from current destination, 
+            #  "reverse" the travel down the tree and return to a previous visited node.  
             if found == False:
                 for edge in self.edges:
                     if int(edge.to) == current:
                         visited.append(int(edge.fro))
                         current = edge.fro
                         break
-        
-        
-   
+
+
+
         # Returns the path with duplicates removed
         return list(dict.fromkeys(visited))
 
-    # Needs finalization
     def num_addresses(self):
-        '''Find the total number of unique addresses on truck and returns it'''
+        '''
+        Find the total number of unique addresses on truck and returns it.
+        
+        Space-time complexity = O(N)
+        '''
 
+        # Initializes list used to hold unique address. 
         unique_addresses = []
 
+        # For each package in cargo, if the address id is not already in list above,
+        #  append address ID to list
         for p in self.cargo:
             if p.address_id not in unique_addresses:
                 unique_addresses.append(p.address_id)
 
+        # Returns the count of unique address
         return len(unique_addresses)
 
-    # Needs finalization
     def travel(self, miles):
         '''
         Updates current time and millage of truck based on miles driven. 
         All trucks within this project drive at a constant 18 MPH, 
         or 200 seconds per mile. 
+
+        Space-time complexity = O(1)
         '''
 
         SECONDS_PER_MILE = 200
@@ -249,11 +279,12 @@ class Truck:
         self.time += driven
         self.millage += miles
 
-    # Needs finalization
     def __repr__(self):
         '''
         Returns a string for the status of the truck.  
         Includes total packages on truck, millage & time.
+
+        Space-time complexity = O(1)
         '''
 
         return_string = f'Truck #{self.number} -- {self.status}\n'
