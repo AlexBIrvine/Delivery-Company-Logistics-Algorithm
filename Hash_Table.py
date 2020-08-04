@@ -1,7 +1,7 @@
 # Alex Irvine
 # C950 submission
 # WGU Student # 000955107
-# Date = 2020/7/12
+# Date = 2020/7/15
 
 from Package import Package
 import csv
@@ -14,9 +14,9 @@ class HashTable:
     Implements direct hashing using the package ID as the key.
     '''
 
-    def  __init__(self, capacity=50):
+    def  __init__(self, capacity=100):
         '''
-        Initializes a HashTable with buckets equal to the capacity (default = 50).
+        Initializes a HashTable with buckets equal to the capacity (default = 100).
         Loads data into table from csv files and initializes variables 
         '''
         # Initializes package & address table.  

@@ -1,7 +1,7 @@
 # Alex Irvine
 # C950 submission
 # WGU Student # 000955107
-# Date = 2020/7/12
+# Date = 2020/7/15
 
 from Package import Package
 from Hash_Table import HashTable
@@ -142,7 +142,7 @@ class Truck:
         '''
         Uses Primm's algorithm to find a minimum spanning tree.  
 
-        Space-time complexity = O(Log N)
+        Space-time complexity = O(N^2) <-- Due to using with an adjacency matrix.  O(log N) if modified to work with an adjacency list.  
         '''
 
         # List used for spanning tree path

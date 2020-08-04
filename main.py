@@ -1,7 +1,7 @@
 # Alex Irvine
 # C950 submission
 # WGU Student # 000955107
-# Date = 2020/7/12
+# Date = 2020/7/15
 
 from datetime import datetime, timedelta
 from Hash_Table import HashTable
@@ -84,6 +84,7 @@ def create_new_package():
     Prompts user for new package attributes and creates a package based on them.  
     The method will also dynamically assign package & address ID to the package.  
     If there is room in the hash table, the package is then inserted into it.  
+    If there is no room in the hash table, a bucket is created for the package to be inserted.
 
     Space-time complexity = O(N)
     '''
@@ -99,10 +100,11 @@ def create_new_package():
             break
 
     # If no empty bucket was found, then hash table full.  
-    # Inform user and exit method.
+    # Append an empty bucket to the hash table and make it's index the package id
     if package_id == -1:
-        print('NO MORE ROOM IN HASH TABLE')
-        return
+        receiveing.package_table.append(None)
+        package_id = len(receiveing.package_table) - 1
+
 
     # Prompts user to enter package details.  
     print("Please enter package details below.\n")

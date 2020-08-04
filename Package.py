@@ -1,7 +1,7 @@
 # Alex Irvine
 # C950 submission
 # WGU Student # 000955107
-# Date = 2020/7/12
+# Date = 2020/7/15
 
 from dataclasses import dataclass
 from typing import List
