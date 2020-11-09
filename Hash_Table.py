@@ -10,16 +10,16 @@ import re
 
 class HashTable:
     '''
-    Hash table that stores all package data.  
+    Hash table that stores all package data.
     Implements direct hashing using the package ID as the key.
     '''
 
     def  __init__(self, capacity=100):
         '''
         Initializes a HashTable with buckets equal to the capacity (default = 100).
-        Loads data into table from csv files and initializes variables 
+        Loads data into table from csv files and initializes variables.
         '''
-        # Initializes package & address table.  
+        # Initializes package & address table
         self.package_table = []
         self.num_addresses = 0
         self.graph = []

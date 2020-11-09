@@ -267,9 +267,9 @@ class Truck:
 
     def travel(self, miles):
         '''
-        Updates current time and millage of truck based on miles driven. 
-        All trucks within this project drive at a constant 18 MPH, 
-        or 200 seconds per mile. 
+        Updates current time and millage of truck based on miles driven.
+        All trucks within this project drive at a constant 18 MPH,
+        or 200 seconds per mile.
 
         Space-time complexity = O(1)
         '''

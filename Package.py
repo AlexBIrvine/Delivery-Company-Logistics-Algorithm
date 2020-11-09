@@ -25,8 +25,8 @@ class Package:
 
     def __str__(self):
         '''
-        Returns a string of the package attributes.  
-        Primarily used in other functions for printing a table. 
+        Returns a string of the package attributes.
+        Primarily used in other functions for printing a table.
 
         Space-time complexity = O(1)
         '''
@@ -34,8 +34,8 @@ class Package:
 
     def __eq__(self, other):
         '''
-        Method used to compare the equality of two packages.  
-        Equality for packages is based on package_id.  
+        Method used to compare the equality of two packages.
+        Equality for packages is based on package_id.
 
         Space-time complexity = O(1)
         '''
